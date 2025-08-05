@@ -488,4 +488,4 @@ $RECYCLE.BIN/
 
 
 Migrations/
-*.db
+appsettings.*.json
