@@ -1,0 +1,43 @@
+@model List<Blog>
+
+<div class="p-6 max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <form method="get" class="flex gap-2">
+            <input name="search" placeholder="Search blog..." class="input input-bordered" />
+            <button type="submit" class="btn">Search</button>
+        </form>
+        <a asp-action="Create" class="btn btn-primary">+ New Blog</a>
+    </div>
+
+    <table class="table w-full">
+        <thead>
+        <tr>
+            <th class="font-bold">Title</th>
+            <th class="font-bold">Category</th>
+            <th class="font-bold">Tags</th>
+            <th class="font-bold">Published</th>
+            <th class="font-bold">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var blog in Model)
+        {
+            <tr>
+                <td>@blog.Title</td>
+                <td>@blog.Category</td>
+                <td>
+                    @foreach (var tag in blog.TagList)
+                    {
+                        <span class="badge badge-outline badge-sm">@tag</span>
+                    }
+                </td>
+                <td>@blog.PublishedAgo</td>
+                <td class="space-x-2">
+                    <a asp-action="Edit" asp-route-id="@blog.Id" class="btn btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@blog.Id" class="btn btn-sm btn-error">Delete</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,61 @@
+@page
+@model LoginModel
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="min-h-screen flex items-center justify-center bg-base-200 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="card w-full max-w-md bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-2xl font-bold text-center">Log in</h2>
+            <form id="account" method="post" class="space-y-6">
+                <div asp-validation-summary="ModelOnly" class="text-error" role="alert"></div>
+
+                <div class="form-control w-full">
+                    <label asp-for="Input.Email" class="label">
+                        <span class="label-text">Email</span>
+                    </label>
+                    <input asp-for="Input.Email" class="input input-bordered w-full" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <span asp-validation-for="Input.Email" class="text-error text-sm mt-1"></span>
+                </div>
+
+                <div class="form-control w-full">
+                    <label asp-for="Input.Password" class="label">
+                        <span class="label-text">Password</span>
+                    </label>
+                    <input asp-for="Input.Password" class="input input-bordered w-full" autocomplete="current-password" aria-required="true" />
+                    <span asp-validation-for="Input.Password" class="text-error text-sm mt-1"></span>
+                </div>
+
+                <div class="form-control">
+                    <label class="label cursor-pointer justify-start gap-2">
+                        <input asp-for="Input.RememberMe" type="checkbox" class="checkbox checkbox-primary" />
+                        <span class="label-text" asp-for="Input.RememberMe">Remember me</span>
+                    </label>
+                </div>
+
+                <div class="form-control mt-6">
+                    <button id="login-submit" type="submit" class="btn btn-primary w-full">Log in</button>
+                </div>
+
+                <div class="divider">OR</div>
+
+                <div class="space-y-3 text-center">
+                    <p>
+                        <a id="forgot-password" asp-page="./ForgotPassword" class="link link-hover link-primary">Forgot your password?</a>
+                    </p>
+                    <p>
+                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="link link-hover link-accent">Register as a new user</a>
+                    </p>
+                    <p>
+                        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation" class="link link-hover link-secondary">Resend email confirmation</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,38 @@
+@page
+@model ResendEmailConfirmationModel
+@{
+    ViewData["Title"] = "Resend email confirmation";
+}
+
+<div class="min-h-screen flex items-center justify-center bg-base-200 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="card w-full max-w-md bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-2xl font-bold text-center">Resend email confirmation</h2>
+            <p class="text-center text-base-content/80 mb-4">Enter your email address to resend the confirmation email.</p>
+
+            <form method="post" class="space-y-6">
+                <div asp-validation-summary="All" class="text-error" role="alert"></div>
+
+                <div class="form-control w-full">
+                    <label asp-for="Input.Email" class="label">
+                        <span class="label-text">Email</span>
+                    </label>
+                    <input asp-for="Input.Email" class="input input-bordered w-full" aria-required="true" placeholder="name@example.com" />
+                    <span asp-validation-for="Input.Email" class="text-error text-sm mt-1"></span>
+                </div>
+
+                <div class="form-control mt-6">
+                    <button type="submit" class="btn btn-primary w-full">Resend</button>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a asp-page="./Login" class="link link-hover link-primary">Return to login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

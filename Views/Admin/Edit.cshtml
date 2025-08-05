@@ -1,0 +1,123 @@
+@model Blog
+@{
+    ViewData["Title"] = "Edit Blog";
+}
+
+<div class="p-6 max-w-3xl mx-auto">
+    <h2 class="text-2xl font-bold mb-6">Edit Blog Post</h2>
+
+    <form asp-action="Edit" asp-controller="Admin" method="post" enctype="multipart/form-data" class="space-y-6">
+        @Html.ValidationSummary(true, "", new { @class = "text-error mb-4" })
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="text-error">Please fix the errors above and try again.</div>
+        }
+        <input type="hidden" asp-for="Id" />
+
+        <div class="form-control">
+            <label class="label font-medium">Title</label>
+            <input asp-for="Title" class="input input-bordered w-full" />
+            <span asp-validation-for="Title" class="text-error text-sm"></span>
+        </div>
+
+        <div class="form-control">
+            <label class="label font-medium">Cover Image</label>
+            <input type="file" name="CoverImage" class="file-input file-input-bordered w-full" />
+        </div>
+
+        <div class="form-control">
+            <label class="label font-medium">Category</label>
+            <input asp-for="Category" class="input input-bordered w-full" />
+        </div>
+
+        <div class="form-control">
+            <label class="label font-medium">Tags (comma-separated)</label>
+            <input asp-for="Tags" class="input input-bordered w-full" />
+        </div>
+
+        <div class="form-control">
+            <label class="label font-medium">Content</label>
+            <div id="editor" class="border rounded min-h-[300px] bg-base-100"></div>
+            <textarea id="Content" name="Content" hidden>@Model.Content</textarea>
+        </div>
+        
+        <div class="form-control">
+            <label class="label font-medium">References</label>
+            <div id="reference-container">
+                @{
+                    var references = Model.References?.ToList() ?? new List<BlogReference> { new() };
+                }
+
+                @for (int i = 0; i < references.Count; i++)
+                {
+                    <div class="flex gap-2 mb-2">
+                        <input type="hidden" name="References[@i].Id" value="@references[i].Id" />
+                        <input name="References[@i].Url" value="@references[i].Url" class="input input-bordered w-1/2" placeholder="URL" />
+                        <input name="References[@i].Title" value="@references[i].Title" class="input input-bordered w-1/4" placeholder="Title (optional)" />
+                        <input name="References[@i].Description" value="@references[i].Description" class="input input-bordered w-1/4" placeholder="Description (optional)" />
+                    </div>
+                }
+            </div>
+            <div class="flex gap-2 mt-2">
+                <button type="button" class="btn btn-sm" onclick="addReference()">+ Add Reference</button>
+                <button type="button" class="btn btn-sm btn-outline" onclick="syncReferences()">Sync from Content</button>
+            </div>
+        </div>
+
+        <div class="flex justify-end">
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a asp-action="Index" class="btn btn-outline ml-2">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_ToastEditorScriptsPartial" />
+    <script>
+        let referenceIndex = @Model.References.Count;
+
+        function addReference(url = '', title = '', description = '') {
+            const container = document.getElementById('reference-container');
+            const div = document.createElement('div');
+            div.className = "flex gap-2 mb-2";
+            div.innerHTML = `
+                <input type="hidden" name="References[${referenceIndex}].Id" value="" />
+                <input name="References[${referenceIndex}].Url" class="input input-bordered w-1/2" value="${url}" placeholder="URL" />
+                <input name="References[${referenceIndex}].Title" class="input input-bordered w-1/4" value="${title}" placeholder="Title (optional)" />
+                <input name="References[${referenceIndex}].Description" class="input input-bordered w-1/4" value="${description}" placeholder="Description (optional)" />
+            `;
+            container.appendChild(div);
+            referenceIndex++;
+        }
+
+        async function syncReferences() {
+            const content = document.getElementById('Content').value;
+            const matches = [...content.matchAll(/\[([^\]]+)]\((https?:\/\/[^\s)]+)\)/g)];
+            const existingUrls = Array.from(document.querySelectorAll('[name$=".Url"]')).map(input => input.value);
+
+            if (matches.length === 0) {
+                alert("No markdown links found in content.");
+                return;
+            }
+
+            for (const match of matches) {
+                const text = match[1];
+                const url = match[2];
+
+                if (existingUrls.includes(url)) continue; // Skip duplicates
+
+                try {
+                    const res = await fetch(`/api/metadata/fetch-title?url=${encodeURIComponent(url)}`);
+                    const data = await res.json();
+                    const title = data.title || text;
+
+                    addReference(url, title);
+                } catch (err) {
+                    console.warn("Failed to fetch metadata for", url, err);
+                    addReference(url, text);
+                }
+            }
+        }
+    </script>
+}

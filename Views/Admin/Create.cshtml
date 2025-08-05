@@ -1,0 +1,49 @@
+@model Blog
+@{
+    ViewData["Title"] = "Create Blog";
+}
+
+<div class="max-w-3xl mx-auto p-6">
+    <h2 class="text-2xl font-bold mb-6">New Blog Post</h2>
+
+    <form asp-action="Create" method="post" enctype="multipart/form-data" class="space-y-6">
+        @Html.ValidationSummary(true, "", new { @class = "text-error mb-4" })
+
+        <div class="form-control">
+            <label class="label font-medium">Title</label>
+            <input asp-for="Title" class="input input-bordered w-full" />
+            <span asp-validation-for="Title" class="text-error text-sm"></span>
+        </div>
+        
+        <div class="form-control">
+            <label class="label font-medium">Cover Image</label>
+            <input type="file" name="CoverImage" class="file-input file-input-bordered w-full" />
+        </div>
+
+        <div class="form-control">
+            <label class="label font-medium">Category</label>
+            <input asp-for="Category" class="input input-bordered w-full" />
+        </div>
+
+        <div class="form-control">
+            <label class="label font-medium">Tags (comma-separated)</label>
+            <input asp-for="Tags" class="input input-bordered w-full" />
+        </div>
+
+        <div class="form-control">
+            <label class="label font-medium">Content</label>
+            <div id="editor" class="border rounded min-h-[300px] bg-base-100"></div>
+            <textarea id="Content" name="Content" hidden>@Model.Content</textarea>
+        </div>
+
+        <div class="flex justify-end">
+            <button type="submit" class="btn btn-primary">Publish</button>
+        </div>
+    </form>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_ToastEditorScriptsPartial" />
+}

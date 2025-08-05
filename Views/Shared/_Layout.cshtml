@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] - Blog</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true"/>
+</head>
+<body class="min-h-screen flex flex-col">
+
+<!-- Header -->
+<header>
+    <div class="navbar bg-neutral text-neutral-content justify-between">
+        <button class="btn btn-ghost text-xl" asp-controller="Home" asp-action="Index">Spiel</button>
+        <partial name="_LoginPartial"/>
+    </div>
+</header>
+
+<!-- Main content (with container inside) -->
+<main role="main" class="flex-grow">
+    <div class="container pb-3">
+        @RenderBody()
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="border-t footer text-muted">
+    <div class="container">
+        &copy; 2025 - BlogSite - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

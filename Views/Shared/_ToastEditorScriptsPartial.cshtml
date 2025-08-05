@@ -1,0 +1,27 @@
+<!-- ✅ Required Editor Core + Plugin Bundle -->
+<link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+
+<!-- ✅ Editor Initialization -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const hiddenField = document.getElementById("Content");
+    const editorContainer = document.getElementById("editor");
+    if (!hiddenField || !editorContainer) return;
+
+    const editor = new toastui.Editor({
+      el: editorContainer,
+      height: '600px',
+      width: '100%',
+      initialEditType: 'markdown',
+      previewStyle: 'vertical',
+      initialValue: hiddenField.value || '',
+      placeholder: 'Write your blog content here...',
+      // No need to pass plugins again
+    });
+
+    editor.on('change', () => {
+      hiddenField.value = editor.getMarkdown();
+    });
+  });
+</script>

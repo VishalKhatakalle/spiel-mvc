@@ -1,0 +1,20 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center mt-12">
+    <h1 class="text-4xl font-bold mb-4">Welcome to Your Blog Admin Panel</h1>
+
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <a class="btn btn-primary mt-4" asp-area="Identity" asp-page="/Account/Login">Login as Admin</a>
+    }
+    else if (User.IsInRole("Admin"))
+    {
+        <a class="btn btn-accent mt-4" asp-controller="Admin" asp-action="Index">Go to Dashboard</a>
+    }
+    else
+    {
+        <p class="mt-4">You're logged in but not an admin.</p>
+    }
+</div>

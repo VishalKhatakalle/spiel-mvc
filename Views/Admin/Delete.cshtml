@@ -1,0 +1,13 @@
+@model Blog
+
+<div class="p-6 max-w-lg mx-auto">
+    <h2 class="text-xl font-semibold mb-4">Delete Blog</h2>
+    <p>Are you sure you want to delete the blog titled:</p>
+    <p class="font-bold text-lg">@Model.Title</p>
+
+    <form asp-action="Delete" method="post" class="mt-6 space-x-2">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-error">Yes, delete</button>
+        <a asp-action="Index" class="btn btn-outline">Cancel</a>
+    </form>
+</div>

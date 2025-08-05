@@ -1,0 +1,170 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Rock+3D&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:wght@400;700&family=Roboto:wght@400;700&family=Lobster&family=Boldonse&family=Geologica:wght@100..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
+
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@plugin "daisyui" {
+  themes: nord --default;
+}
+
+/* 🎨 Custom Color Palette */
+:root {
+  --color-primary: #5C9EAD;
+  --color-bg: #FFFFFF;
+  --color-dark: #326273;
+  --color-light: #EEEEEE;
+  --color-accent: #E39774;
+  --color-gray-soft: #343a40;
+  --color-highlight: #022b3a;
+  --color-highlight-border: #1f7a8c;
+}
+
+/* 👕 Font Family Shortcuts */
+@layer utilities {
+  .font-poppins { font-family: 'Poppins', sans-serif; }
+  .font-roboto { font-family: 'Roboto', sans-serif; }
+  .font-lobster { font-family: 'Lobster', cursive; }
+  .font-boldonse { font-family: 'Boldonse', sans-serif; }
+  .font-rubik { font-family: 'Rubik', sans-serif; }
+  .font-geologica { font-family: 'Geologica', sans-serif; }
+  .font-inter { font-family: 'Inter', sans-serif; }
+  .font-rocked { font-family: 'Rock 3D', sans-serif; }
+  .font-roboto-condensed { font-family: 'Roboto Condensed', sans-serif; }
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-dark);
+}
+
+/* ✍️ Prose Markdown Styling */
+.prose h1 {
+  font-family: 'Poppins', sans-serif;
+  @apply font-bold leading-tight text-balance;
+  color: var(--color-gray-soft);
+}
+.prose h2 {
+  font-family: 'Poppins', sans-serif;
+  @apply font-semibold text-2xl leading-tight text-balance;
+  color: var(--color-gray-soft);
+}
+.prose h3 {
+  @apply font-medium text-xl;
+  color: var(--color-primary);
+}
+.prose h4 {
+  @apply text-lg;
+  color: var(--color-dark);
+}
+
+.prose p {
+  font-family: 'Roboto', sans-serif;
+  @apply leading-relaxed text-justify tracking-tight;
+  color: var(--color-dark);
+}
+
+.prose a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+.prose a:hover {
+  color: var(--color-accent);
+}
+
+.prose ul {
+  font-family: 'Roboto Condensed', sans-serif;
+  @apply list-disc text-justify;
+  color: var(--color-dark);
+}
+.prose ol {
+  @apply list-decimal text-justify;
+  color: var(--color-dark);
+}
+.prose li::marker {
+  color: #89b0ae;
+}
+
+.prose blockquote {
+  @apply border-l-4 pl-4 italic;
+  color: #6b7280;
+  border-color: #d1d5db;
+}
+
+.prose pre {
+  @apply relative bg-white border p-4 rounded-md font-mono text-sm max-w-sm w-[250px];
+  color: var(--color-dark);
+  border-color: var(--color-dark);
+}
+.prose pre code {
+  @apply bg-transparent p-0;
+  color: var(--color-dark);
+}
+.prose pre::before {
+  @apply absolute left-4 top-3 font-mono text-sm;
+  color: var(--color-dark);
+}
+.prose pre .copy-btn {
+  @apply absolute top-2 right-2 flex cursor-pointer w-5 h-5 hover:text-gray-400 duration-200;
+  color: var(--color-dark);
+}
+
+.prose img {
+  @apply rounded-lg shadow-md mx-auto;
+}
+
+.prose table {
+  @apply w-full border-collapse border;
+  border-color: #d1d5db;
+}
+.prose th {
+  @apply px-4 py-2 text-left font-semibold;
+  background-color: #e5e7eb;
+  border-color: #d1d5db;
+}
+.prose td {
+  @apply px-4 py-2;
+  border-color: #d1d5db;
+}
+.prose tr:nth-child(even) {
+  background-color: #f3f4f6;
+}
+
+.prose hr {
+  @apply my-6;
+  border-top: 2px solid #d1d5db;
+}
+
+.prose strong {
+  font-weight: bold;
+  color: var(--color-highlight);
+  border-bottom: 4px solid transparent;
+  transition: border-color 0.3s ease;
+}
+.prose strong:hover {
+  border-bottom-color: var(--color-highlight-border);
+}
+
+.prose em {
+  font-style: italic;
+  color: var(--color-highlight);
+}
+
+.prose q {
+  @apply italic;
+  color: #6b7280;
+}
+
+.prose details {
+  @apply border p-2 rounded-md;
+  background-color: var(--color-light);
+  border-color: #d1d5db;
+}
+.prose summary {
+  @apply font-semibold cursor-pointer;
+}
+
+.diff-modal-container pre {
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+}

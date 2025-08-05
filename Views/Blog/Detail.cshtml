@@ -1,0 +1,191 @@
+@model Blog
+@{
+    var headings = ViewData["Headings"] as List<(int Level, string Text, string Id)> ?? new();
+}
+
+<div class="max-w-7xl mx-auto p-6 flex flex-col lg:flex-row gap-8">
+    <!-- Sidebar ToC -->
+    <aside class="lg:w-1/4 sticky top-6 self-start hidden lg:block overflow-y-auto max-h-[80vh]">
+        <nav class="prose prose-sm">
+            <h3 class="text-lg font-semibold">Table of Contents</h3>
+            <ul class="list-disc pl-4">
+                @foreach (var (level, text, id) in headings)
+                {
+                    <li class="ml-@((level - 1) * 4)">
+                        <a href="#@id">@text</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Blog Content -->
+    <main class="prose max-w-none lg:w-3/4">
+        <div class="mr-32">
+            <h1>@Model.Title</h1>
+            <p class="text-sm text-gray-500">Posted @Model.PublishedAgo by @Model.User.UserName</p>
+
+            <div class="flex gap-2 flex-wrap mt-2">
+                @foreach (var tag in Model.TagList)
+                {
+                    <span class="badge badge-outline badge-sm">@tag</span>
+                }
+            </div>
+
+            <div class="mt-6">
+                @Html.Raw(Model.ContentHtml)
+            </div>
+
+            @if (Model.Images.Any())
+            {
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+                    @foreach (var img in Model.Images)
+                    {
+                        <img src="@img.Url" class="rounded shadow border" />
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- References & Revisions Accordion -->
+        <section class="join join-vertical bg-base-100 mt-8 w-full">
+            <!-- References -->
+            <div class="collapse collapse-arrow join-item border-base-300 border w-full">
+                <input type="radio" name="accordion" checked />
+                <div class="collapse-title font-semibold">References</div>
+                <div class="collapse-content text-sm">
+                    @if (Model.References.Any())
+                    {
+                        <ol class="list-disc list-inside space-y-2">
+                            @foreach (var reference in Model.References)
+                            {
+                                <li>
+                                    <a href="@reference.Url" target="_blank" class="text-blue-600 underline">
+                                        @(string.IsNullOrWhiteSpace(reference.Title) ? reference.Url : reference.Title)
+                                    </a>
+                                    @if (!string.IsNullOrWhiteSpace(reference.Description))
+                                    {
+                                        <div class="text-xs text-gray-500">@reference.Description</div>
+                                    }
+                                </li>
+                            }
+                        </ol>
+                    }
+                    else
+                    {
+                        <p class="text-gray-500 italic">No references.</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Revisions -->
+            <div class="collapse collapse-arrow join-item border-base-300 border">
+                <input type="radio" name="accordion" />
+                <div class="collapse-title font-semibold">Revisions</div>
+                <div class="collapse-content text-sm">
+                    @if (Model.Revisions.Any())
+                    {
+                        <ul class="list-disc list-inside">
+                            @foreach (var rev in Model.Revisions.OrderByDescending(r => r.CreatedAt))
+                            {
+                                <li>
+                                    <strong>@rev.CreatedAt.ToString("g")</strong>
+                                    @if (!string.IsNullOrWhiteSpace(rev.EditedByUserId))
+                                    {
+                                        <span class="text-xs text-gray-500"> edited by @rev.EditedByUserId</span>
+                                    }
+                                </li>
+                            }
+                        </ul>
+
+                        <form id="diffForm" class="mt-4 space-y-2">
+                            <label>Select two revisions to compare:</label>
+                            <div class="flex gap-2">
+                                <select name="rev1" class="select select-sm select-bordered">
+                                    @foreach (var r1 in Model.Revisions.OrderByDescending(r => r.CreatedAt))
+                                    {
+                                        <option value="@r1.Id">@r1.CreatedAt.ToString("g") - @r1.EditedByUserId</option>
+                                    }
+                                </select>
+                                <select name="rev2" class="select select-sm select-bordered">
+                                    @foreach (var r2 in Model.Revisions.OrderByDescending(r => r.CreatedAt))
+                                    {
+                                        <option value="@r2.Id">@r2.CreatedAt.ToString("g") - @r2.EditedByUserId</option>
+                                    }
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-primary">Compare</button>
+                            </div>
+                        </form>
+
+                        <!-- Modal to show side-by-side diff -->
+                        <dialog id="diffModal" class="modal modal-bottom sm:modal-middle">
+                            <div class="modal-box max-w-7xl w-full">
+                                <h3 class="font-bold text-lg mb-4">Revision Comparison</h3>
+                                <div id="diffSummary" class="mb-4 text-sm text-gray-600 italic"></div>
+                                <div id="diffOutput" class="grid grid-cols-2 gap-4 text-sm font-mono overflow-auto max-h-[60vh]">
+                                    <div>
+                                        <h4 class="text-base font-semibold mb-2">Current Version</h4>
+                                        <div id="leftDiff" class="prose max-w-none"></div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-base font-semibold mb-2">Selected Revision</h4>
+                                        <div id="rightDiff" class="prose max-w-none"></div>
+                                    </div>
+                                </div>
+                                <div class="modal-action">
+                                    <form method="dialog">
+                                        <button class="btn">Close</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </dialog>
+                    }
+                    else
+                    {
+                        <p class="text-gray-500 italic">No revisions yet.</p>
+                    }
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('diffForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const rev1 = form.rev1.value;
+            const rev2 = form.rev2.value;
+
+            document.getElementById('leftDiff').innerHTML = "<p>Loading...</p>";
+            document.getElementById('rightDiff').innerHTML = "<p>Loading...</p>";
+            document.getElementById('diffSummary').innerText = "Generating diff...";
+
+            try {
+                const response = await fetch(`/blog/diff?rev1=${rev1}&rev2=${rev2}`);
+                const { leftHtml, rightHtml, summary } = await response.json();
+
+                document.getElementById('leftDiff').innerHTML = leftHtml;
+                document.getElementById('rightDiff').innerHTML = rightHtml;
+                document.getElementById('diffSummary').innerText = summary;
+
+                document.getElementById('diffModal').showModal();
+            } catch (err) {
+                document.getElementById('leftDiff').innerHTML = "<p class='text-red-500'>Error.</p>";
+                document.getElementById('rightDiff').innerHTML = "";
+                document.getElementById('diffSummary').innerText = "";
+            }
+        });
+    </script>
+}
+
+<style>
+    .bg-green-100 { background-color: #d1fae5; }
+    .bg-red-100 { background-color: #fee2e2; }
+    .bg-yellow-100 { background-color: #fef3c7; }
+    .text-green-800 { color: #065f46; }
+    .text-red-800 { color: #991b1b; }
+    .text-yellow-800 { color: #92400e; }
+    .line-through { text-decoration: line-through; }
+</style>
